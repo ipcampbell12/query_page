@@ -1,0 +1,60 @@
+<!doctype html>
+<script>
+  function addAlert(id, type, statement) {
+    if (document.getElementById("loading") !== null) {
+      ("The spinner was not null");
+      removeSpinner();
+    }
+
+    // clearData()
+    const placeholder = getElement(id);
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = [
+      `
+       <div class="alert alert-${type} alert-dismissible" role="alert" id="alert">`,
+      `   <div>${statement}</div>`,
+      '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+      "</div>",
+    ].join("");
+    placeholder.append(wrapper);
+    setTimeout(() => {
+      getElement("alert").remove();
+    }, 3000);
+  }
+
+  function addSpinner(id = "family") {
+    console.log("The spinner function has run");
+    getElement(id).innerHTML = ` <div id = "loading" class= "loading pt-40">
+     <div class="d-flex justify-content-center">
+       <div>
+ 
+          <div class="spinner-border" role="status" style="width: 4rem; height: 4rem;">
+           <span class="visually-hidden">Loading...</span>
+          </div>
+          <div>Loading... </div>
+       </div>
+     </div>
+                     </div>
+       `;
+  }
+
+  function copyToClipboard(event) {
+    const topDiv = event.target.parentElement;
+    const first = topDiv.children[0].children[1].value;
+    const last = topDiv.children[1].children[1].value;
+    const str = `${last}, ${first}`;
+    const el = document.createElement("textarea");
+    el.value = str;
+
+    console.log(el.value);
+
+    navigator.clipboard.writeText(str);
+    addAlert("copied-alert-placeholder", "success", "Name copied to clipboard");
+  }
+
+  function copyQuery(){
+
+  }
+
+  
+</script>
