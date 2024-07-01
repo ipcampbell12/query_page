@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  </head>
+  <body>
+  <div id="container">
+        <div class="form-control mt-3 ms-1 me-1 mb-2">
+            <h6 class="text-center">Manage Sheets and Columns</h6>
+            <div class="text-center">
+              <button onclick="clientCreateTabs()" type="button" class="btn btn-info ms-3 me-3 mt-2 mb-3" id="query-tabs">Create New Tabs</button>
+              <br>
+              <div id="tabs-spinner-placeholder" class="mt-2 mb-2"></div>
+              <div id="tabs-alert-placeholder" class="mt-2 mb-2"></div>
+            </div>
+      
+            <div class="text-center">
+              <button onclick="clientHideSheets()" type="button" class="btn btn-warning ms-3 me-3 mt-2 mb-3" id="query-tabs">Hide Extra Sheets</button>
+              <br>
+              <div id="sheets-spinner-placeholder" class="mt-2 mb-2"></div>
+              <div id="sheets-alert-placeholder" class="mt-2 mb-2"></div>
+            </div>
+
+            <div class="text-center">
+              <button onclick="clientFixColumns()" type="button" class="btn btn-success ms-3 me-3 mt-2 mb-3" id="query-tabs">Fix Columns</button>
+              <br>
+              <div id="columns-spinner-placeholder" class="mt-2 mb-2"></div>
+              <div id="columns-alert-placeholder" class="mt-2 mb-2"></div>
+            </div>
+      </div>
+
+      <div class="form-control ms-1 me-1 mb-2">
+          <h6 class="text-center">Copy Information</h6>
+          <div class="text-center">
+              <p id="query-to-copy" data-query="State_StudentNumber=;grade>=0;schoolid#92">  </p>
+              <button onclick="copyQuery()" type="button" class="btn btn-primary ms-3 me-3" id="query-btn">Copy Query (not added)</button>
+              <br>
+              <div id="query-alert-placeholder" class="mt-3 mb-3"></div>
+          </div>
+          <div class="text-center">
+              <p id="fields-to-copy" data-fields=""></p>
+              <button onclick="copyOtherQuery()" type="button" class="btn btn-primary ms-3 me-3" id="query-btn">Copy Query (already added)</button>
+              <div id="fields-alert-placeholder" class="mt-3 mb-3"> </div>
+          </div>
+      </div>
+
+
+      <div class="form-control ms-1 me-1 mb-2">
+        <h6 class="text-center">Login Information</h6>
+          <div id="username-to-copy" data-username="icampbell"></div>
+          <div id="password-to-copy" data-password="Emmanuel24!!!"></div>
+          <div class="text-center">
+            <button onclick="copyUsername()" type="button" class="btn btn-secondary ms-5 ms-3 me-3" id="username-btn" style="text-align:center;">Copy Username</button>
+            <br>
+            <div id="liveAlertPlaceholder-username"></div>
+          </div>
+
+          <div class="text-center">
+            <button onclick="copyPassword()" type="button" class="btn btn-secondary ms-5 ms-3 me-3" id="password-btn" style="text-align:center;">Copy Password</button>
+            <br>
+                <div id="liveAlertPlaceholder-password"></div>
+          </div>
+      </div>
+      
+      
+
+</div>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  </body>
+    <script>
+    function copyQuery(){
+      copyToClipboard('query');
+    }
+
+    function clientCreateTabs(){
+      google.script.run.createNewTabs()
+    }
+
+    function clientHideSheets(){
+      google.script.run.hideExtraSheets()
+    }
+
+   function getDates(){
+        const start = new Date(document.getElementById("start-date").value).toLocaleDateString('en-US');
+        const end = new Date(document.getElementById("end-date").value).toLocaleDateString('en-US');
+        const query = `U_Students_Extension.Reg_Cmpltn_Date>=${start};U_Students_Extension.Reg_Cmpltn_Date<=${end};grade>=0`;
+
+        console.log(query)
+        return query;
+    }
+
+    function copyUsername(){
+      copyToClipboard('username');
+    }
+    function copyPassword(){
+      copyToClipboard('password');
+    }
+      
+    function copyToClipboard(type) {
+      let str;
+      let alertTrigger;
+
+      const btns = {
+        "fields":"fields-btn",
+        "query": "query-btn"
+      }
+
+      if(type==='query'){
+         str = document.getElementById('query-to-copy').dataset.query;
+      }
+
+      if(type==='fields'){
+          str = document.getElementById('fields-to-copy').dataset.fields;
+      }
+
+      if(type==='username'){
+          str = document.getElementById('username-to-copy').dataset.username;
+      }
+
+      if(type==='password'){
+          str = document.getElementById('password-to-copy').dataset.password;
+      }
+
+      console.log(type)
+
+      const el = document.createElement('textarea');
+      el.value = str;
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+
+      alertTrigger=true;
+      console.log(alertTrigger)
+      const element = document.getElementById(btns[type])
+      console.log(element)
+     
+
+        if (alertTrigger) {
+           const alertPlaceholder = document.getElementById(`liveAlertPlaceholder-${type}`)
+            const wrapper = document.createElement('div')
+            wrapper.innerHTML = [
+              `
+              <br>
+              <div class="alert alert-success alert-dismissible" role="alert" id="alert">`,
+              `   <div>You have copied the ${type}!</div>`,
+              '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+              '</div>'
+            ].join('')
+            alertPlaceholder.append(wrapper)
+        }
+
+             setTimeout(()=>{
+             const element = document.getElementById("alert");
+             element.remove();
+          },2500)
+    }
+
+     
+
+  
+
+
+    </script>
+  </body>
+</html>
